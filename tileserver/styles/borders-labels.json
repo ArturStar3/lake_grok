@@ -1,0 +1,336 @@
+{
+  "version": 8,
+  "name": "borders-labels",
+  "glyphs": "{fontstack}/{range}.pbf",
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "mbtiles://{openmaptiles}"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#f2efe9"
+      }
+    },
+    {
+      "id": "landcover_forest",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "type": "fill",
+      "minzoom": 5,
+      "filter": ["in", "class", "wood", "forest"],
+      "paint": {
+        "fill-color": "#8aa36a",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.65, 10, 0.85]
+      }
+    },
+    {
+      "id": "landcover_grass",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "type": "fill",
+      "minzoom": 5,
+      "filter": ["in", "class", "grass", "meadow", "scrub", "heath"],
+      "paint": {
+        "fill-color": "#c8d6b3",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.55, 10, 0.75]
+      }
+    },
+    {
+      "id": "landcover_crop",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "type": "fill",
+      "minzoom": 5,
+      "filter": ["in", "class", "farmland", "crop", "orchard", "vineyard"],
+      "paint": {
+        "fill-color": "#e8e4c9",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 10, 0.7]
+      }
+    },
+    {
+      "id": "landcover_wetland",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "type": "fill",
+      "minzoom": 6,
+      "filter": ["==", "class", "wetland"],
+      "paint": {
+        "fill-color": "#a3c4b8",
+        "fill-opacity": 0.65
+      }
+    },
+    {
+      "id": "water",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "type": "fill",
+      "paint": {
+        "fill-color": "#a3c4d9"
+      }
+    },
+    {
+      "id": "building",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "type": "fill",
+      "minzoom": 12,
+      "paint": {
+        "fill-color": "#d9d0c9",
+        "fill-opacity": 0.8
+      }
+    },
+    {
+      "id": "boundary_country",
+      "source": "openmaptiles",
+      "source-layer": "boundary",
+      "type": "line",
+      "filter": [
+        "all",
+        [
+          "==",
+          "admin_level",
+          2
+        ],
+        [
+          "==",
+          "maritime",
+          0
+        ],
+        [
+          "==",
+          "$type",
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#555555",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          0,
+          0.5,
+          3,
+          1,
+          6,
+          2,
+          10,
+          3
+        ],
+        "line-opacity": 0.85
+      }
+    },
+    {
+      "id": "landcover_bare",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "type": "fill",
+      "minzoom": 5,
+      "filter": ["in", "class", "rock", "scree", "bare_rock", "sand", "glacier"],
+      "paint": {
+        "fill-color": "#d8d4c9",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 10, 0.65]
+      }
+    },
+    {
+      "id": "contour",
+      "source": "openmaptiles",
+      "source-layer": "contour",
+      "type": "line",
+      "minzoom": 9,
+      "filter": ["has", "ele"],
+      "paint": {
+        "line-color": "#a8a8a8",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.3, 12, 0.6, 14, 1],
+        "line-opacity": 0.35
+      }
+    },
+    {
+      "id": "road_minor",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "type": "line",
+      "filter": ["in", "class", "residential", "living_street", "service", "unclassified", "track", "path"],
+      "minzoom": 10,
+      "paint": {
+        "line-color": "#e0e0e0",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          10, 0.5,
+          14, 2,
+          16, 4
+        ]
+      }
+    },
+    {
+      "id": "road_major",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "type": "line",
+      "filter": ["in", "class", "motorway", "trunk", "primary", "secondary", "tertiary"],
+      "minzoom": 6,
+      "paint": {
+        "line-color": "#bbbbbb",
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          6, 1,
+          10, 2.5,
+          14, 5,
+          16, 8
+        ]
+      }
+    },
+    {
+      "id": "place_country",
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "type": "symbol",
+      "filter": [
+        "==",
+        "class",
+        "country"
+      ],
+      "layout": {
+        "text-field": [
+          "coalesce",
+          [
+            "match",
+            ["get", "name:ru"],
+            "Нур-Султан", "Астана",
+            "Нур Султан", "Астана",
+            ["get", "name:ru"]
+          ],
+          [
+            "match",
+            ["get", "name"],
+            "Nur-Sultan", "Астана",
+            "Nur Sultan", "Астана",
+            ["get", "name"]
+          ],
+          ["get", "name:latin"]
+        ],
+        "text-font": [
+          "Open Sans Bold"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          2,
+          8,
+          4,
+          12,
+          6,
+          16
+        ]
+      },
+      "paint": {
+        "text-color": "#222222",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.5
+      }
+    },
+    {
+      "id": "place_region",
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "type": "symbol",
+      "filter": [
+        "in",
+        "class",
+        "region",
+        "province",
+        "state"
+      ],
+      "layout": {
+        "text-field": [
+          "coalesce",
+          [
+            "match",
+            ["get", "name:ru"],
+            "Нур-Султан", "Астана",
+            "Нур Султан", "Астана",
+            ["get", "name:ru"]
+          ],
+          [
+            "match",
+            ["get", "name"],
+            "Nur-Sultan", "Астана",
+            "Nur Sultan", "Астана",
+            ["get", "name"]
+          ],
+          ["get", "name:latin"]
+        ],
+        "text-font": [
+          "Open Sans Regular"
+        ],
+        "text-size": 11
+      },
+      "paint": {
+        "text-color": "#444444",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "place_locality",
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "type": "symbol",
+      "filter": [
+        "in",
+        "class",
+        "city",
+        "town",
+        "village",
+        "hamlet"
+      ],
+      "layout": {
+        "text-field": [
+          "coalesce",
+          [
+            "match",
+            ["get", "name:ru"],
+            "Нур-Султан", "Астана",
+            "Нур Султан", "Астана",
+            ["get", "name:ru"]
+          ],
+          [
+            "match",
+            ["get", "name"],
+            "Nur-Sultan", "Астана",
+            "Nur Sultan", "Астана",
+            ["get", "name"]
+          ],
+          ["get", "name:latin"]
+        ],
+        "text-font": [
+          "Open Sans Regular"
+        ],
+        "text-size": 10
+      },
+      "paint": {
+        "text-color": "#333333",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1
+      }
+    }
+  ]
+}

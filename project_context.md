@@ -309,3 +309,89 @@
 - `.gitignore` создан с фокусом на backend (без .env) + frontend. Полностью игнорируется директория `media/` (все загруженные файлы, маркеры, вложения). При добавлении новых директорий/зависимостей обновляй `.gitignore` и этот раздел контекста.
 
 Файл создан как единый компактный справочник. Дубли кода и длинные фрагменты исключены.
+
+---
+
+## 7. TileServer GL — оффлайн векторные карты (ветка develop_tileserver)
+
+**Статус:** Развёрнуто (demo-данные). 
+- Директория `tileserver/` создана.
+- Контейнер `tileserver-gl` успешно поднимается через docker compose (порт 8080).
+- Использованы демо-данные (Цюрих, Швейцария, ~34 МБ) для быстрой проверки. Для РФ/СНГ нужно запустить скрипт с `-Region asia`.
+
+**Цель:**
+- Локальный сервер векторных тайлов без доступа к интернету.
+- Замена/дополнение текущих источников карт во фронтенде (сейчас Leaflet + статический `public/geo/custom.geo.json` для границ стран + внешние/локальные растровые тайлы).
+- Полноценные векторные данные: границы стран, подписи государств, населённых пунктов, базовая гидрография/дороги.
+- Полная поддержка русского языка (`name:ru` + подмена устаревших названий).
+
+**Технологии и компоненты (по tileserver_start_guide.md):**
+- Docker-образ: `maptiler/tileserver-gl:latest`
+- `docker-compose.yml` — запуск на 8080, монтирование всей папки как `/data`, `--config config.json`
+- `config.json` — пути к mbtiles (`data/`), fonts, styles; источник `openmaptiles`
+- Данные:
+  - `data/map.mbtiles` — OpenMapTiles векторные тайлы (НЕ коммитятся). Рекомендуемый регион для РФ/СНГ — `asia` (~36 ГБ) или `planet`.
+  - Демо: zurich_switzerland.mbtiles
+- Стили (в `styles/`):
+  - `borders-labels.json` — основной (границы + подписи)
+  - `basic.json` — упрощённый
+- Шрифты: `fonts/` (Open Sans Regular/Bold/... из test_data.zip TileServer GL). Коммитятся в git.
+- `data/name-overrides.json` — правила подмены названий (пример: Нур-Султан → Астана на уровне стиля).
+- Скрипты (`scripts/`):
+  - `download-data.ps1` — загрузка test_data.zip (шрифты) + MBTiles по региону.
+  - `apply-name-overrides.ps1` — применение overrides к JSON-стилям.
+- `.gitignore` в tileserver/: `*.mbtiles`, `test_data.zip` и пр. (шрифты — в репо).
+
+**Ключевые особенности стилей и рендера:**
+- Приоритет имён: `name:ru` → `name` → `name:latin`
+- `"glyphs": "{fontstack}/{range}.pbf"` (без префикса `fonts/`, т.к. paths.fonts уже задан в config.json)
+- Цветовая схема (из референса basic): фон `#f2efe9`, вода `#a3c4d9`, границы `#555555` и т.д.
+- Подмена имён происходит на уровне стиля (не затрагивает исходный MBTiles).
+
+**Проверка после запуска (`docker compose up -d`):**
+- UI: http://localhost:8080
+- Style: /styles/borders-labels/style.json
+- Vector tiles: /data/openmaptiles/{z}/{x}/{y}.pbf
+- Raster tiles: /styles/borders-labels/{z}/{x}/{y}.png
+- Fonts: /fonts/Open%20Sans%20Regular/0-255.pbf
+
+**Интеграция с основным приложением (ожидается):**
+- Frontend (Leaflet / возможно переход на MapLibre GL) сможет использовать локальный TileJSON: `http://localhost:8080/data/openmaptiles.json`
+- Style JSON: `http://localhost:8080/styles/borders-labels/style.json`
+- Преимущества: полностью оффлайн, богатые векторные данные, кастомные подписи на русском, границы высокого качества вместо статического GeoJSON.
+- Текущая карта использует кластеризацию маркеров, рисование событий (shapes в JSON), зоны действия, пересечения — всё это должно продолжать работать поверх векторного тайлового слоя.
+
+**Источники данных (из гайда):**
+- MBTiles: limaps.org, object.data.gouv.fr (planet), официальные тестовые от MapTiler.
+- OpenMapTiles schema: https://openmaptiles.org/schema/
+- Лицензии: © OpenMapTiles © OpenStreetMap contributors (требуется атрибуция).
+
+**Примечания:**
+- Порт 8080 должен быть свободен (или менять маппинг).
+- Шрифты критичны: неправильный путь glyphs → "Invalid range".
+- После смены стилей/overrides: `docker compose restart`.
+- На данный момент (по context) основная карта — Leaflet. Переход/параллельное использование tileserver — задача текущей ветки.
+
+**Созданная структура (развёртывание по tileserver_start_guide.md):**
+- `docker-compose.yml` (в **корне проекта**) — образ maptiler/tileserver-gl, volumes `./tileserver:/data`, allowed hosts + public_url
+- `tileserver/config.json` — paths (fonts/styles/data), источник openmaptiles → map.mbtiles, два стиля
+- `tileserver/styles/borders-labels.json` + `basic.json` — минимальные рабочие стили (фон #f2efe9, вода #a3c4d9, границы, place с coalesce name:ru → name → name:latin, glyphs без префикса fonts/)
+- `tileserver/data/name-overrides.json` — пример подмены Нур-Султан → Астана
+- `tileserver/scripts/download-data.ps1` — загрузка шрифтов + MBTiles по региону (-Region demo|asia|...)
+- `tileserver/scripts/apply-name-overrides.ps1` — рекурсивная замена имён в стилях (совместим с PS 5.1)
+- `tileserver/.gitignore` — игнорирует *.mbtiles и test_data.zip
+- `tileserver/data/map.mbtiles` (demo zurich) + `fonts/` (Open Sans) — скачаны скриптом
+
+**Запуск (после выноса compose в корень):**
+- Выполнять из **корня проекта** (lake_grok/):
+  ```bash
+  docker compose up -d
+  docker compose ps
+  docker compose restart
+  docker compose down
+  ```
+- Проверка: http://localhost:8080 (выбрать стиль **borders-labels**)
+
+**Текущий запущенный контейнер:** tileserver-gl (порт 8080). Контейнер управляется корневым docker-compose.yml.
+
+**Важно:** Все данные, стили, шрифты, скрипты и config.json остаются внутри `tileserver/`. docker-compose.yml вынесен в корень для удобства (будущая возможность добавить другие сервисы, например Django, в один compose-файл).
