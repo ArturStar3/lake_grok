@@ -120,6 +120,15 @@ desktop.ini
 # docker-compose.yml лежит в корне проекта (не внутри tileserver/).
 # ----------------------------------------
 
+# Actual ignore patterns for tileserver data (in addition to tileserver/.gitignore)
+tileserver/*.mbtiles
+tileserver/**/*.mbtiles
+tileserver/terrain.mbtiles
+tileserver/data/*.mbtiles
+tileserver/test_data.zip
+tileserver/*.zip
+
+
 # ============================================
 # Что будет в git (по замыслу):
 # - backend/ (весь код, миграции .py, static, media/markers/, media/event_markers/)
