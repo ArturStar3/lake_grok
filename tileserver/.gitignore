@@ -1,8 +1,0 @@
-*.mbtiles
-test_data.zip
-.DS_Store
-Thumbs.db
-
-# Keep fonts and styles committed
-!fonts/
-!styles/

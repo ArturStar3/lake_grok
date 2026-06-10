@@ -1,85 +1,89 @@
-<#
-.SYNOPSIS
-    Скачивает шрифты (test_data.zip) и векторные MBTiles для TileServer GL.
-.DESCRIPTION
-    Поддерживаемые регионы: demo, central-america, europe, asia, planet
-    Шрифты скачиваются только если папка fonts/ пустая или не содержит Open Sans.
-    MBTiles сохраняется как data/map.mbtiles (с поддержкой докачки).
-#>
+# Скрипт загрузки данных для офлайн TileServer GL
+# Использование: .\scripts\download-data.ps1 [-Region europe|asia|planet|demo]
+
 param(
-    [Parameter(Mandatory=$false)]
-    [ValidateSet("demo","central-america","europe","asia","planet")]
+    [ValidateSet("demo", "central-america", "europe", "asia", "planet")]
     [string]$Region = "demo"
 )
 
 $ErrorActionPreference = "Stop"
-$baseDir = Split-Path -Parent $MyInvocation.MyCommand.Path | Split-Path -Parent
-Set-Location $baseDir
+$Root = Split-Path -Parent $PSScriptRoot
+$DataDir = Join-Path $Root "data"
 
-$fontsDir = Join-Path $baseDir "fonts"
-$dataDir = Join-Path $baseDir "data"
-$testDataZip = Join-Path $baseDir "test_data.zip"
-
-# URLs from tileserver_start_guide.md
-$testDataUrl = "https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/test_data.zip"
-
-$mbtilesUrls = @{
-    "demo"            = "https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/zurich_switzerland.mbtiles"
-    "central-america" = "https://www.limaps.org/MBTiles/2024-10-08-central-america.osm.mbtiles"
-    "europe"          = "https://www.limaps.org/MBTiles/2024-10-08-europe.osm.mbtiles"
-    "asia"            = "https://www.limaps.org/MBTiles/2024-10-08-asia.osm.mbtiles"
-    "planet"          = "https://object.data.gouv.fr/openmaptiles/planet.mbtiles"
+if (-not (Test-Path $DataDir)) {
+    New-Item -ItemType Directory -Path $DataDir -Force | Out-Null
 }
 
-$mbtilesFile = Join-Path $dataDir "map.mbtiles"
-
-# 1. Скачиваем шрифты, если нужно
-$needsFonts = -not (Test-Path (Join-Path $fontsDir "Open Sans Regular")) -or 
-              -not (Get-ChildItem $fontsDir -Recurse -Filter "*.pbf" -ErrorAction SilentlyContinue)
-
-if ($needsFonts) {
-    Write-Host "Downloading fonts (test_data.zip)..." -ForegroundColor Cyan
-    curl.exe -L -o $testDataZip $testDataUrl
-
-    Write-Host "Extracting fonts..."
-    # test_data.zip содержит папку fonts/ на верхнем уровне
-    Expand-Archive -Path $testDataZip -DestinationPath $baseDir -Force
-
-    # Иногда архив распаковывается в подкаталог — подстрахуемся
-    $extractedFonts = Join-Path $baseDir "fonts"
-    if (Test-Path $extractedFonts) {
-        Write-Host "Fonts extracted to $extractedFonts"
+$Sources = @{
+    "demo" = @{
+        Url = "https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/zurich_switzerland.mbtiles"
+        Size = "~25 MB"
+        Note = "Демо-регион (Цюрих). Для глобальных границ используйте europe/asia/planet."
     }
-
-    Remove-Item $testDataZip -Force -ErrorAction SilentlyContinue
-    Write-Host "Fonts ready." -ForegroundColor Green
-} else {
-    Write-Host "Fonts already present, skipping download." -ForegroundColor Yellow
+    "central-america" = @{
+        Url = "https://www.limaps.org/MBTiles/2024-10-08-central-america.osm.mbtiles"
+        Size = "~1.3 GB"
+        Note = "Регион Центральная Америка + глобальный контекст на малых зумах."
+    }
+    "europe" = @{
+        Url = "https://www.limaps.org/MBTiles/2024-10-08-europe.osm.mbtiles"
+        Size = "~30 GB"
+        Note = "Европа. Границы стран и населённые пункты."
+    }
+    "asia" = @{
+        Url = "https://www.limaps.org/MBTiles/2024-10-08-asia.osm.mbtiles"
+        Size = "~36 GB"
+        Note = "Азия (включая Россию, СНГ, Китай)."
+    }
+    "planet" = @{
+        Url = "https://object.data.gouv.fr/openmaptiles/planet.mbtiles"
+        Size = "~94 GB"
+        Note = "Весь мир. Требует ~100 ГБ свободного места."
+    }
 }
 
-# 2. Скачиваем MBTiles
-$url = $mbtilesUrls[$Region]
-Write-Host "Downloading MBTiles for region '$Region' from $url ..." -ForegroundColor Cyan
-Write-Host "Target: $mbtilesFile (resume supported)"
-
-# Создаём папку data на всякий случай
-New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
-
-curl.exe -L -C - -o $mbtilesFile $url
-
-if (Test-Path $mbtilesFile) {
-    $size = (Get-Item $mbtilesFile).Length / 1MB
-    Write-Host "MBTiles downloaded: $([math]::Round($size,1)) MB -> $mbtilesFile" -ForegroundColor Green
-} else {
-    Write-Error "Failed to download MBTiles"
+function Download-File($Url, $Dest) {
+    Write-Host "Загрузка: $Url"
+    Write-Host "Сохранение: $Dest"
+    curl.exe -L --progress-bar -C - -o $Dest $Url
+    if ($LASTEXITCODE -ne 0) {
+        throw "Ошибка загрузки (curl exit code: $LASTEXITCODE)"
+    }
 }
 
-# 3. Применяем name overrides (если скрипт есть)
-$applyScript = Join-Path $baseDir "scripts\apply-name-overrides.ps1"
-if (Test-Path $applyScript) {
-    Write-Host "Applying name overrides..."
-    & $applyScript
+# 1. Шрифты и спрайты из test_data (если ещё не загружены)
+$FontsMarker = Join-Path $Root "fonts\Open Sans Regular\0-255.pbf"
+if (-not (Test-Path $FontsMarker)) {
+    $TestDataZip = Join-Path $Root "test_data.zip"
+    if (-not (Test-Path $TestDataZip)) {
+        Write-Host "Загрузка test_data.zip (шрифты, спрайты)..."
+        Download-File "https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/test_data.zip" $TestDataZip
+    }
+    Write-Host "Распаковка шрифтов и спрайтов..."
+    Expand-Archive -Path $TestDataZip -DestinationPath $Root -Force
+    # test_data содержит fonts/, sprites/ в корне архива
 }
 
-Write-Host "Done. Now you can run: docker compose up -d" -ForegroundColor Green
-Write-Host "Open: http://localhost:8080  (style: borders-labels or basic)" -ForegroundColor Green
+# 2. MBTiles
+$Source = $Sources[$Region]
+$MbtilesPath = Join-Path $DataDir "map.mbtiles"
+
+Write-Host ""
+Write-Host "Регион: $Region ($($Source.Size))"
+Write-Host $Source.Note
+Write-Host ""
+
+if (Test-Path $MbtilesPath) {
+    $Existing = (Get-Item $MbtilesPath).Length
+    if ($Existing -gt 1MB) {
+        Write-Host "Файл map.mbtiles уже существует ($([math]::Round($Existing/1MB, 1)) MB). Пропуск."
+        Write-Host "Удалите data\map.mbtiles для повторной загрузки."
+        exit 0
+    }
+}
+
+Download-File $Source.Url $MbtilesPath
+
+$FinalSize = (Get-Item $MbtilesPath).Length
+Write-Host "Готово! map.mbtiles: $([math]::Round($FinalSize/1MB, 1)) MB"
+Write-Host "Запуск: docker compose up -d"
