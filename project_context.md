@@ -2,8 +2,10 @@
 
 **Проект:** infolake / lake_grok  
 **Тип:** Веб-приложение электронной разведывательной сводки (карта + формуляры объектов + события).  
-**Стек:** Django 5.2 + DRF + PostgreSQL (backend) | Vite + React 18 + Leaflet + axios (frontend)  
-**Дата анализа:** 2026 (текущий код)
+**Стек:** Django 6.0 + DRF + PostgreSQL (backend) | Vite + React 18 + Leaflet + axios (frontend)  
+**Текущая ветка:** develop_tailserver (TileServer GL интеграция)  
+**Дата анализа:** 2026 (актуализировано)  
+**Дата последнего обновления контекста:** по запросу пользователя (соответствует текущему состоянию файловой структуры, версиям и статусу TileServer)
 
 ---
 
@@ -24,20 +26,24 @@
 
 **Backend (Django project: `infolake`)**
 
-- `infolake/` — корень проекта
-  - `settings.py` — DRF, CORS_ALLOW_ALL, PostgreSQL (через django-environ), MEDIA/STATIC, русский язык.
+Весь backend-код находится в директории `backend/` (корень репозитория).
+
+- `backend/infolake/` — Django project root
+  - `settings.py` — DRF, `CORS_ALLOW_ALL_ORIGINS=True`, PostgreSQL (django-environ), `MEDIA_ROOT`/`MEDIA_URL`, русский язык (`ru-ru`), `DEBUG=True`, `ALLOWED_HOSTS=['*']`.
   - `urls.py` — `/admin/`, `/api/v1/` → `api.urls`.
   - `enums.py` — `BaseEnum` (для choices).
-- `formular/` — **основное приложение данных и админки**
+- `backend/formular/` — **основное приложение данных и админки**
   - Модели, admin (очень кастомный), inlines, forms/widgets (ColorRadioSelect), enums, validators (SVG).
-- `api/` — **DRF слой**
+- `backend/api/` — **DRF слой**
   - ViewSets + custom APIView, serializers (вложенные + write/create логика).
-- `manage.py`, `markers/` (примеры). Директория `media/` полностью игнорируется в .gitignore (загруженные файлы и ассеты не попадают в репозиторий).
+- `backend/manage.py`, `backend/requirements.txt`, `backend/markers/` (пример SVG).
+- `backend/media/` — полностью игнорируется в .gitignore (загруженные файлы, маркеры, вложения).
+- `backend/env/` — виртуальное окружение Python (не должно попадать в git).
 
 **Frontend (Vite + React)**
 
 - `src/` — основная логика UI.
-  - `config/api.js` — единая `API_URL` (env или дефолт `http://172.16.80.207:8000`).
+  - `config/api.js` — единая `API_URL` (`import.meta.env.VITE_API_URL` или дефолт `http://172.16.80.207:8000`).
   - `components/Formular/Formular.jsx` — **главный оркестратор** (табы Objects/Events, фильтры, таблица, модалы, загрузка данных, состояние selected/hovered/measure/action-radius).
   - `components/MapComponent/` — карта Leaflet + кластеризация + события + инструменты (измерения, зоны действия, рисование событий).
   - Модалы: Add/Edit Target, Formular (view + editor bulk), Events (Add/Edit), Country info.
@@ -238,160 +244,174 @@
 
 **Backend root**
 - `backend/manage.py` — стандартный.
-- `backend/requirements.txt` — Django/DRF/psycopg2/pillow/django-environ/corsheaders.
-- `backend/infolake/settings.py` — конфиг (DB, CORS all, REST, media).
+- `backend/requirements.txt` — Django 6.0.6, djangorestframework, psycopg2-binary, pillow, django-environ, django-cors-headers.
+- `backend/infolake/settings.py` — конфиг (PostgreSQL, CORS_ALLOW_ALL_ORIGINS, REST, MEDIA_ROOT, русский язык).
 - `backend/infolake/urls.py` — admin + api/v1 include.
 - `backend/infolake/enums.py` — BaseEnum.
 - `backend/infolake/{asgi,wsgi}.py` — стандарт.
 
 **formular (данные + админ)**
-- `formular/models.py` — **все модели** (см. раздел 2).
-- `formular/admin.py` — регистрации + кастом (MarkerAdmin svg_thumbnail, get_queryset prefetch, Country color и т.д.).
-- `formular/admin_inlines.py` — TargetInline*, TargetActionInline, CountryInfoInline, FormularInline.
-- `formular/forms.py` — CountryForm (с ColorRadioSelect).
-- `formular/widgets.py` — ColorRadioSelect.
-- `formular/enums.py` — Colors (BaseEnum) + ActionAnimations.
-- `formular/validators.py` — validate_svg.
-- `formular/views.py` — пустой (логика в admin/api).
-- `formular/apps.py` — стандарт.
-- `migrations/` — 27 миграций (эволюция моделей + merge).
+- `backend/formular/models.py` — **все модели** (см. раздел 2).
+- `backend/formular/admin.py` — регистрации + кастом (MarkerAdmin svg_thumbnail, get_queryset prefetch, Country color и т.д.).
+- `backend/formular/admin_inlines.py` — TargetInline*, TargetActionInline, CountryInfoInline, FormularInline.
+- `backend/formular/forms.py` — CountryForm (с ColorRadioSelect).
+- `backend/formular/widgets.py` — ColorRadioSelect.
+- `backend/formular/enums.py` — Colors (BaseEnum) + ActionAnimations.
+- `backend/formular/validators.py` — validate_svg.
+- `backend/formular/views.py` — пустой (логика в admin/api).
+- `backend/formular/apps.py` — стандарт.
+- `backend/formular/migrations/` — ~30 миграций (включая merge-миграции, до 0027+).
 
 **api (DRF)**
-- `api/urls.py` — router + 3 custom path (country/<iso>, formular/<id>, /bulk).
-- `api/views.py` — все ViewSet + CountryInfoView, FormularView, FormularBulkUpdateView, Event фильтрация.
-- `api/serializers.py` — ~20 сериализаторов (read nested / write custom + bulk).
-- `api/apps.py`, `tests.py` — стандарт.
+- `backend/api/urls.py` — router + 3 custom path (country/<iso>, formular/<id>, /bulk).
+- `backend/api/views.py` — все ViewSet + CountryInfoView, FormularView, FormularBulkUpdateView, Event фильтрация.
+- `backend/api/serializers.py` — ~20 сериализаторов (read nested / write custom + bulk).
+- `backend/api/apps.py`, `tests.py` — стандарт.
 
 **Frontend root**
-- `frontend/package.json` — react, axios, leaflet, react-leaflet, react-leaflet-cluster, react-router-dom.
-- `frontend/vite.config.js` — простой react plugin.
+- `frontend/package.json` — React ^18.2, axios 1.4, leaflet 1.9.4, react-leaflet 4.2.1, react-leaflet-cluster 3.0.0, react-router-dom 6.14. Vite ^7.
+- `frontend/vite.config.js` — React plugin.
 - `frontend/index.html` — entry.
-- `frontend/INTEGRATION_GUIDE.md`, `IMPLEMENTATION_SUMMARY.md`, `CLUSTERING_*.md` — доки по интеграции/кластеризации.
+- `frontend/eslint.config.js`, `extract_iso_codes.cjs`, `iso_codes_*.json/txt` — вспомогательные скрипты.
+- `frontend/INTEGRATION_GUIDE.md`, `IMPLEMENTATION_SUMMARY.md`, `CLUSTERING_DOCUMENTATION.md`, `CLUSTERING_README.md` — доки по интеграции и кластеризации.
+- `frontend/README.md` — локальный README фронтенда.
 
 **Frontend src/**
-- `src/main.jsx`, `App.jsx` (минимальный; реальный UI в Formular), `App.css`, `index.css`.
+- `src/main.jsx`, `App.jsx` (минимальный; реальный UI в Formular.jsx), `App.css`, `index.css`.
 - `src/config/api.js` — API_URL.
 - `src/constants/mapConstants.js`.
-- `src/data/objects.js` — статический fallback.
-- `src/hooks/` — useTargetFormData, useActionsArray, useDropdownWithSearch (+ summary md).
+- `src/data/objects.js` — статический fallback (не основной источник).
+- `src/hooks/` — useTargetFormData, useActionsArray, useDropdownWithSearch (+ hooks_usage_summary.md).
 - `src/utils/` — svgUtils.js, markerFilters.js, circleIntersection.js.
+- `src/assets/` — глобальные CSS (reboot, fonts, блоки), шрифты Roboto, изображения и SVG-спрайты.
 - `src/components/`:
-  - `Formular/Formular.jsx` + .css — **главный компонент** (state, fetch, tabs, filters, modals orchestration).
-  - `MapComponent/MapComponent.jsx` (большой) + MapUtils.jsx + markerClusteringUtils.js + NonFlagMarkerUtils.jsx + ActionRadius* + clusteringExamples.js.
+  - `Formular/Formular.jsx` + .css — **главный оркестратор** (загрузка данных, состояние, вкладки Objects/Events, фильтры, модалы, measure, action-radius, intersections).
+  - `MapComponent/MapComponent.jsx` (основной) + MapUtils.jsx + markerClusteringUtils.js + NonFlagMarkerUtils.jsx + ActionRadiusAnimations.jsx + ActionRadiusLegendButton.
+  - Есть архивная копия: `MapComponent — archive/`.
   - `ObjectsTable/ObjectsTable.jsx`.
   - `Events/` — EventsTable, EventsFilterPanel, AddEventModal.
-  - `FormularModal/`, `FormularEditor/` (bulk редактор + attachments).
+  - `FormularModal/`, `FormularEditor/` (bulk-редактор + загрузка/удаление attachments).
   - `AddTargetModal/`, `EditTargetModal/`.
-  - `CountryModal/`, `EditCountryModal/`, `EditCountryInfoModal/` (частично).
-  - `FilterPanel/`, `FilterForm/`, `Features/` (measure + intersections sidebar), `IntersectionTable/`.
-  - `Header/`, `Footer/`, `Sidebar.jsx` (legacy/не основной).
-- `public/` (фронт) — sprite.svg, leaflet/, geo/custom.geo.json, images.
+  - `CountryModal/`, `EditCountryModal/`.
+  - `FilterPanel/`, `FilterForm/`, `Features/` (measure + intersections), `IntersectionTable/`.
+  - `Header/`, `Footer/`, `Sidebar.jsx` (частично legacy).
+- `public/` — geo/custom.geo.json (границы стран), leaflet-иконки, SVG-спрайты и изображения.
 
 **Media (runtime)**
-- `backend/media/` — полностью игнорируется в .gitignore (не попадает в репозиторий). Содержит загруженные маркеры, иконки событий и пользовательские вложения.
+- `backend/media/` — полностью игнорируется в .gitignore (не попадает в репозиторий). Содержит загруженные маркеры (76+ SVG), иконки событий, attachments стран и формуляров.
 
 **Другое**
-- `backend/markers/` (пример 1DM.svg).
-- `Значки/`, `Значки событий/` — исходные SVG иконок (вне кода, для импорта в media).
-- `Данные.xlsx` — возможно источник данных.
-- `.gitignore` — подготовлен так, чтобы в репозиторий попадали файлы из `backend/` (кроме `.env*`) и `frontend/`. Полностью игнорируется `media/` (маркеры, иконки событий и все вложения не попадают в git).
+- `backend/markers/` (пример SVG).
+- `frontend/` содержит дополнительные файлы документации и скриптов (см. выше).
+- `Значки/`, `Значки событий/` — исходные SVG-иконки (вне кода, для импорта в `backend/media/`).
+- `Данные.xlsx` — возможный источник исходных данных.
+- Корневой `docker-compose.yml` — только сервис tileserver (порт 8080).
+- `.gitignore` — подготовлен так, чтобы в репозиторий попадали файлы из `backend/` (кроме `.env*` и `env/`) и `frontend/`. Полностью игнорируются `media/`, `**/*.mbtiles`, `tileserver/docker-compose.yml`.
 
 ---
 
 **Примечания для следующего агента:**
-- Всё API открыто (AllowAny). Добавление auth потребует изменений в permissions + возможно JWT.
-- Кластеризация жёстко завязана на `marker.is_flag`, `order`, `scale`, `country.title` и пиксельные расчёты через map.latLngToLayerPoint.
+- Всё API открыто (`AllowAny`). Добавление auth потребует изменений в permissions + возможно JWT.
+- Кластеризация жёстко завязана на `marker.is_flag`, `order`, `scale`, `country.title` и пиксельные расчёты через `map.latLngToLayerPoint`.
 - Формуляр и CountryInfo — контент + attachments отдельно (bulk + файловые аплоады).
 - События используют JSON shape (не GeoDjango).
 - При изменениях моделей — миграции + обновление сериализаторов/модалов/хуков.
-- Frontend state в Formular.jsx (не Redux/Context глобально). Много useMemo/useEffect для фильтров, intersections, кластеров.
-- SVG обработка критична (уникализация id gradients при множестве одинаковых маркеров).
-- `.gitignore` создан с фокусом на backend (без .env) + frontend. Полностью игнорируется директория `media/` (все загруженные файлы, маркеры, вложения). При добавлении новых директорий/зависимостей обновляй `.gitignore` и этот раздел контекста.
+- Frontend state сосредоточен в `Formular.jsx` (не Redux/Context глобально). Много `useMemo`/`useEffect` для фильтров, intersections, кластеров.
+- SVG обработка критична (уникализация `id`/`gradient` при множестве одинаковых маркеров).
+- **Интеграция с TileServer выполнена** (ветка develop_tailserver):
+  - Основной `MapComponent.jsx` и архивная версия теперь используют растровые тайлы из TileServer GL.
+  - URL тайлов: `http://localhost:8080/styles/borders-labels/{z}/{x}/{y}.png` (конфигурируется через `VITE_TILESERVER_URL`).
+  - Конфиг: `frontend/src/config/tiles.js` (экспортирует `TILE_RASTER_URL`, `TILESERVER_BASE_URL` и др.).
+  - Добавлена attribution (OpenMapTiles + OSM).
+  - maxZoom поднят до 14.
+  - Старая заглушка `/tiles/{z}/{x}/{y}.png` удалена.
+  - GeoJSON стран оставлен поверх (нужен для кликабельности и CountryModal).
+- `.gitignore` создан с фокусом на `backend/` (без `.env*` и `env/`) + `frontend/`. Полностью игнорируется `media/`, все `*.mbtiles`, `tileserver/docker-compose.yml`. На момент актуализации в `tileserver/` присутствуют артефакты (`$null`, `-L/`, `-o/`, `curl.exe/`, `test_data.zip/`) и дублирующий `docker-compose.yml` — их следует почистить.
+- При добавлении новых директорий/зависимостей обновляй `.gitignore` и этот раздел контекста.
+- Основной справочник для агентов — **только этот файл**. Перед глубоким чтением кода обновляй `project_context.md`.
+- Новая переменная окружения фронтенда: `VITE_TILESERVER_URL` (дефолт `http://localhost:8080`). Пример использования: `VITE_TILESERVER_URL=http://localhost:8080 npm run dev`.
 
 Файл создан как единый компактный справочник. Дубли кода и длинные фрагменты исключены.
 
+**Последнее обновление:** контекст приведён в соответствие с реальной структурой проекта, версией Django (6.0.6), расположением кода в `backend/`, текущим состоянием `tileserver/` (отсутствие mbtiles + наличие артефактов), и статусом интеграции тайлов во фронтенде (пока используется `/tiles/...`).
+
 ---
 
-## 7. TileServer GL — оффлайн векторные карты (ветка develop_tileserver)
+## 7. TileServer GL — оффлайн векторные карты (ветка develop_tailserver)
 
-**Статус:** Развёрнуто (demo-данные). 
-- Директория `tileserver/` создана.
-- Контейнер `tileserver-gl` успешно поднимается через docker compose (порт 8080).
-- Использованы демо-данные (Цюрих, Швейцария, ~34 МБ) для быстрой проверки. Для РФ/СНГ нужно запустить скрипт с `-Region asia`.
+**Текущий статус (на момент актуализации):**
+- Инфраструктура TileServer GL в целом развёрнута.
+- Корневой `docker-compose.yml` поднимает сервис `tileserver` (образ `maptiler/tileserver-gl:latest`) на порту 8080, монтируя `./tileserver:/data`.
+- В `tileserver/` присутствуют:
+  - `config.json`, стили (`styles/borders-labels.json` + `basic.json`), шрифты (`fonts/Open Sans *`).
+  - Скрипты (`download-data.ps1`, `apply-name-overrides.ps1`, `pre-render-png.js` и др.).
+  - `data/name-overrides.json` (правила подмены имён, например Нур-Султан → Астана).
+  - `tileserver_start_guide.md` (дублируется также в корне проекта).
+- **Важно:** на текущий момент в `tileserver/data/` отсутствует файл `map.mbtiles` (векторные тайлы). Доступны только шрифты и стили.
+- В директории `tileserver/` присутствует значительное количество артефактов (нарушение .gitignore):
+  - `docker-compose.yml` (должен быть только в корне проекта)
+  - `$null`, `-L/`, `-o/`, `curl.exe/`, `test_data.zip/`
+- Контейнер успешно поднимается командой из корня проекта: `docker compose up -d`.
 
 **Цель:**
-- Локальный сервер векторных тайлов без доступа к интернету.
-- Замена/дополнение текущих источников карт во фронтенде (сейчас Leaflet + статический `public/geo/custom.geo.json` для границ стран + внешние/локальные растровые тайлы).
-- Полноценные векторные данные: границы стран, подписи государств, населённых пунктов, базовая гидрография/дороги.
-- Полная поддержка русского языка (`name:ru` + подмена устаревших названий).
+- Локальный сервер векторных тайлов без доступа к интернету (замена/дополнение внешних тайлов).
+- Полноценные векторные данные OpenMapTiles: границы, подписи населённых пунктов, гидрография, дороги и т.д.
+- Полная поддержка русского языка (`name:ru` + кастомная подмена устаревших названий через `name-overrides.json`).
 
-**Технологии и компоненты (по tileserver_start_guide.md):**
+**Технологии и компоненты:**
 - Docker-образ: `maptiler/tileserver-gl:latest`
-- `docker-compose.yml` — запуск на 8080, монтирование всей папки как `/data`, `--config config.json`
-- `config.json` — пути к mbtiles (`data/`), fonts, styles; источник `openmaptiles`
-- Данные:
-  - `data/map.mbtiles` — OpenMapTiles векторные тайлы (НЕ коммитятся). Рекомендуемый регион для РФ/СНГ — `asia` (~36 ГБ) или `planet`.
-  - Демо: zurich_switzerland.mbtiles
-- Стили (в `styles/`):
-  - `borders-labels.json` — основной (границы + подписи)
-  - `basic.json` — упрощённый
-- Шрифты: `fonts/` (Open Sans Regular/Bold/... из test_data.zip TileServer GL). Коммитятся в git.
-- `data/name-overrides.json` — правила подмены названий (пример: Нур-Султан → Астана на уровне стиля).
-- Скрипты (`scripts/`):
-  - `download-data.ps1` — загрузка test_data.zip (шрифты) + MBTiles по региону.
-  - `apply-name-overrides.ps1` — применение overrides к JSON-стилям.
-- `.gitignore` в tileserver/: `*.mbtiles`, `test_data.zip` и пр. (шрифты — в репо).
+- Конфигурация: `config.json` (пути к `data/`, `fonts/`, `styles/`, источник `openmaptiles`).
+- Стили: `borders-labels.json` (основной, с границами и подписями), `basic.json`.
+- Шрифты: Open Sans (Regular/Bold/Italic/Semibold) — хранятся в git.
+- Подмена имён: `data/name-overrides.json` (применяется на уровне стиля).
+- Глифы в стилях: `"glyphs": "{fontstack}/{range}.pbf"` (без префикса `fonts/`, т.к. путь уже задан в config.json).
 
-**Ключевые особенности стилей и рендера:**
-- Приоритет имён: `name:ru` → `name` → `name:latin`
-- `"glyphs": "{fontstack}/{range}.pbf"` (без префикса `fonts/`, т.к. paths.fonts уже задан в config.json)
-- Цветовая схема (из референса basic): фон `#f2efe9`, вода `#a3c4d9`, границы `#555555` и т.д.
-- Подмена имён происходит на уровне стиля (не затрагивает исходный MBTiles).
+**Ключевые особенности рендера:**
+- Приоритет имён: `name:ru` → `name` → `name:latin`.
+- Цветовая схема (фон `#f2efe9`, вода `#a3c4d9`, границы `#555555` и др.).
+- Подмена названий работает на уровне стиля (не затрагивает исходные MBTiles).
 
-**Проверка после запуска (`docker compose up -d`):**
-- UI: http://localhost:8080
-- Style: /styles/borders-labels/style.json
-- Vector tiles: /data/openmaptiles/{z}/{x}/{y}.pbf
-- Raster tiles: /styles/borders-labels/{z}/{x}/{y}.png
-- Fonts: /fonts/Open%20Sans%20Regular/0-255.pbf
+**Проверка работоспособности (после `docker compose up -d`):**
+- Веб-интерфейс: http://localhost:8080
+- Стиль borders-labels: `/styles/borders-labels/style.json`
+- Векторные тайлы: `/data/openmaptiles/{z}/{x}/{y}.pbf`
+- Растровые тайлы: `/styles/borders-labels/{z}/{x}/{y}.png`
+- Шрифты: `/fonts/Open%20Sans%20Regular/0-255.pbf`
+- Метаданные: `/data/openmaptiles.json`
 
-**Интеграция с основным приложением (ожидается):**
-- Frontend (Leaflet / возможно переход на MapLibre GL) сможет использовать локальный TileJSON: `http://localhost:8080/data/openmaptiles.json`
-- Style JSON: `http://localhost:8080/styles/borders-labels/style.json`
-- Преимущества: полностью оффлайн, богатые векторные данные, кастомные подписи на русском, границы высокого качества вместо статического GeoJSON.
-- Текущая карта использует кластеризацию маркеров, рисование событий (shapes в JSON), зоны действия, пересечения — всё это должно продолжать работать поверх векторного тайлового слоя.
-
-**Источники данных (из гайда):**
-- MBTiles: limaps.org, object.data.gouv.fr (planet), официальные тестовые от MapTiler.
-- OpenMapTiles schema: https://openmaptiles.org/schema/
-- Лицензии: © OpenMapTiles © OpenStreetMap contributors (требуется атрибуция).
-
-**Примечания:**
-- Порт 8080 должен быть свободен (или менять маппинг).
-- Шрифты критичны: неправильный путь glyphs → "Invalid range".
-- После смены стилей/overrides: `docker compose restart`.
-- На данный момент (по context) основная карта — Leaflet. Переход/параллельное использование tileserver — задача текущей ветки.
-
-**Созданная структура (развёртывание по tileserver_start_guide.md):**
-- `docker-compose.yml` (в **корне проекта**) — образ maptiler/tileserver-gl, volumes `./tileserver:/data`, allowed hosts + public_url
-- `tileserver/config.json` — paths (fonts/styles/data), источник openmaptiles → map.mbtiles, два стиля
-- `tileserver/styles/borders-labels.json` + `basic.json` — минимальные рабочие стили (фон #f2efe9, вода #a3c4d9, границы, place с coalesce name:ru → name → name:latin, glyphs без префикса fonts/)
-- `tileserver/data/name-overrides.json` — пример подмены Нур-Султан → Астана
-- `tileserver/scripts/download-data.ps1` — загрузка шрифтов + MBTiles по региону (-Region demo|asia|...)
-- `tileserver/scripts/apply-name-overrides.ps1` — рекурсивная замена имён в стилях (совместим с PS 5.1)
-- `tileserver/.gitignore` — игнорирует *.mbtiles и test_data.zip
-- `tileserver/data/map.mbtiles` (demo zurich) + `fonts/` (Open Sans) — скачаны скриптом
-
-**Запуск (после выноса compose в корень):**
-- Выполнять из **корня проекта** (lake_grok/):
-  ```bash
-  docker compose up -d
-  docker compose ps
-  docker compose restart
-  docker compose down
+**Состояние интеграции с приложением:**
+- **На текущий момент не выполнена в активном коде.**
+- Активный `frontend/src/components/MapComponent/MapComponent.jsx` использует:
+  ```jsx
+  <TileLayer url="/tiles/{z}/{x}/{y}.png" minZoom={5} maxZoom={12} />
   ```
-- Проверка: http://localhost:8080 (выбрать стиль **borders-labels**)
+- Существует архивная копия (`MapComponent — archive/`) с предыдущими попытками интеграции тайлов.
+- После появления `map.mbtiles` и запуска сервера фронтенд сможет переключиться на:
+  - TileJSON: `http://localhost:8080/data/openmaptiles.json`
+  - Style: `http://localhost:8080/styles/borders-labels/style.json`
+- Кластеризация маркеров, рисование событий (JSON shapes), зоны действия и пересечения должны продолжать работать поверх векторного слоя.
 
-**Текущий запущенный контейнер:** tileserver-gl (порт 8080). Контейнер управляется корневым docker-compose.yml.
+**Запуск и управление (из корня проекта):**
+```bash
+docker compose up -d
+docker compose ps
+docker compose restart
+docker compose down
+```
+Рекомендуется после старта открыть http://localhost:8080 и выбрать стиль **borders-labels**.
 
-**Важно:** Все данные, стили, шрифты, скрипты и config.json остаются внутри `tileserver/`. docker-compose.yml вынесен в корень для удобства (будущая возможность добавить другие сервисы, например Django, в один compose-файл).
+**Источники данных и лицензии:**
+- OpenMapTiles (векторные MBTiles): limaps.org, object.data.gouv.fr и др.
+- Схема слоёв: https://openmaptiles.org/schema/
+- Лицензия данных: © OpenMapTiles © OpenStreetMap contributors (требуется атрибуция).
+- Шрифты и тестовые данные: из официального `test_data.zip` TileServer GL.
+
+**Примечания и типичные проблемы:**
+- Порт 8080 должен быть свободен.
+- Отсутствие `map.mbtiles` — основная причина "пустой карты" на 8080.
+- Шрифты критичны: неправильный путь `glyphs` → ошибка "Invalid range".
+- После изменений стилей или `name-overrides.json`: `docker compose restart`.
+- Артефакты в `tileserver/` (`$null`, `-L/`, `-o/`, `curl.exe/`, `test_data.zip/`, `tileserver/docker-compose.yml`) следует удалить в соответствии с `.gitignore`.
+- Основная карта приложения пока остаётся на Leaflet + текущий TileLayer. Переход на TileServer GL — задача ветки `develop_tailserver`.
+
+**Важно:** Все полезные данные (стили, шрифты, скрипты, config, name-overrides) хранятся внутри `tileserver/`. Корневой `docker-compose.yml` вынесен для удобства (возможность в будущем добавить Django и другие сервисы в один compose).
