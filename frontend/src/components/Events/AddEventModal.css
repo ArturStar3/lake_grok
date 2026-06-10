@@ -1,0 +1,380 @@
+.event-modal__overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10000;
+	padding: 20px;
+}
+
+.event-modal__overlay--floating {
+	background: rgba(0, 0, 0, 0.15);
+	pointer-events: none;
+}
+
+.event-modal__overlay--floating .event-modal {
+	pointer-events: auto;
+}
+
+.event-modal {
+	background: #fff;
+	border-radius: 14px;
+	width: 100%;
+	max-width: 520px;
+	max-height: 80vh;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+	overflow: hidden;
+}
+
+.event-modal__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 24px;
+	border-bottom: 1px solid #e6e6e6;
+}
+
+.event-modal__title {
+	margin: 0;
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #222;
+}
+
+.event-modal__close {
+	border: none;
+	background: none;
+	font-size: 28px;
+	cursor: pointer;
+	color: #666;
+	width: 32px;
+	height: 32px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.event-modal__close:hover {
+	background: #f2f2f2;
+}
+
+.event-modal__body {
+	padding: 20px 24px 24px;
+	overflow-y: auto;
+	max-height: calc(80vh - 70px);
+}
+
+.event-modal__summary {
+	font-size: 0.95rem;
+	margin-bottom: 10px;
+}
+
+.event-modal__geo-details {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	padding: 12px 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 16px;
+	font-size: 0.9rem;
+}
+
+.event-modal__geo-edit {
+	margin-top: 16px;
+}
+
+.event-modal__geo-title {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #1f2937;
+}
+
+.event-modal__geo-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+
+.event-modal__geo-points {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.event-modal__geo-point {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.event-modal__geo-point-label {
+	font-size: 0.85rem;
+	color: #334155;
+}
+
+.event-modal__geo-point-inputs {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+}
+
+.event-modal__geo-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	color: #334155;
+}
+
+.event-modal__hint {
+	font-size: 0.9rem;
+	color: #666;
+}
+
+.event-modal__form {
+	margin-top: 16px;
+}
+
+.event-modal__grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+}
+
+.event-modal__field {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.event-modal__field--full {
+	grid-column: 1 / -1;
+}
+
+.event-modal__label {
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: #333;
+}
+
+.event-modal__input,
+.event-modal__textarea {
+	border: 1px solid #d8d8d8;
+	border-radius: 8px;
+	padding: 10px 12px;
+	font-size: 0.95rem;
+	font-family: inherit;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.event-modal__input:focus,
+.event-modal__textarea:focus {
+	outline: none;
+	border-color: #008dd2;
+	box-shadow: 0 0 0 3px rgba(0, 141, 210, 0.1);
+}
+
+.event-modal__textarea {
+	resize: vertical;
+}
+
+.event-modal__color-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.event-modal__color-input {
+	width: 44px;
+	height: 36px;
+	border: 1px solid #d8d8d8;
+	border-radius: 8px;
+	padding: 0;
+	background: transparent;
+}
+
+.event-modal__color-palette {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.event-modal__color-swatch {
+	width: 24px;
+	height: 24px;
+	border-radius: 6px;
+	border: 2px solid transparent;
+	cursor: pointer;
+	padding: 0;
+}
+
+.event-modal__color-swatch--active {
+	border-color: #111827;
+}
+
+.event-modal__dropdown {
+	position: relative;
+}
+
+.event-modal__dropdown-trigger {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	background: white;
+	border: 1px solid #d8d8d8;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	cursor: pointer;
+	text-align: left;
+	transition: border-color 0.2s;
+	font-family: inherit;
+}
+
+.event-modal__dropdown-trigger:hover {
+	border-color: #008dd2;
+}
+
+.event-modal__dropdown-arrow {
+	transition: transform 0.2s;
+	flex-shrink: 0;
+}
+
+.event-modal__dropdown-arrow--open {
+	transform: rotate(180deg);
+}
+
+.event-modal__dropdown-menu {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	background: white;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
+	max-height: 300px;
+	display: flex;
+	flex-direction: column;
+}
+
+.event-modal__search-wrapper {
+	padding: 8px;
+	border-bottom: 1px solid #eee;
+}
+
+.event-modal__search-input {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	font-size: 0.9rem;
+	font-family: inherit;
+}
+
+.event-modal__search-input:focus {
+	outline: none;
+	border-color: #008dd2;
+}
+
+.event-modal__dropdown-list {
+	overflow-y: auto;
+	max-height: 240px;
+}
+
+.event-modal__dropdown-option {
+	width: 100%;
+	padding: 10px 12px;
+	border: none;
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: background-color 0.15s;
+	font-family: inherit;
+}
+
+.event-modal__dropdown-option:hover {
+	background-color: #f5f5f5;
+}
+
+.event-modal__dropdown-option--selected {
+	background-color: #e8f4ff;
+	color: #008dd2;
+	font-weight: 500;
+}
+
+.event-modal__dropdown-option--marker {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.event-modal__no-results {
+	padding: 16px;
+	text-align: center;
+	color: #999;
+	font-size: 0.9rem;
+}
+
+.event-modal__marker-selected {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.event-modal__marker-icon {
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.event-modal__marker-icon svg {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.event-modal__footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.event-modal__btn {
+	border: none;
+	background: #008dd2;
+	color: #fff;
+	padding: 10px 18px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 0.95rem;
+	font-weight: 500;
+}
+
+.event-modal__btn--ghost {
+	background: #f1f5f9;
+	color: #334155;
+}
+
+.event-modal__btn--ghost:hover {
+	background: #e2e8f0;
+}
+
+@media (max-width: 768px) {
+	.event-modal__grid {
+		grid-template-columns: 1fr;
+	}
+}

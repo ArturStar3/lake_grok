@@ -1,0 +1,401 @@
+.formular-editor__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.formular-editor__content {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.formular-editor__header {
+    position: relative;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.formular-editor__header h2 {
+    margin: 0 40px 0 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.formular-editor__subtitle {
+    margin: 6px 40px 0 0;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.formular-editor__close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.formular-editor__close:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.formular-editor__error {
+    margin: 16px 24px;
+    padding: 12px;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 6px;
+    color: #c33;
+    font-size: 0.9rem;
+}
+
+.formular-editor__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.formular-editor__loading {
+    padding: 40px;
+    text-align: center;
+    color: #999;
+    font-size: 1rem;
+}
+
+.formular-editor__section {
+    margin-bottom: 24px;
+}
+
+.formular-editor__section--level-0 {
+    margin-bottom: 32px;
+}
+
+.formular-editor__section--level-1 {
+    margin-bottom: 20px;
+    padding-left: 0;
+}
+
+.formular-editor__section--level-2 {
+    margin-bottom: 16px;
+    padding-left: 16px;
+}
+
+.formular-editor__section-title {
+    margin: 0 0 16px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.formular-editor__section-title--level-0 {
+    font-size: 1.3rem;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #008dd2;
+}
+
+.formular-editor__section-title--level-1 {
+    font-size: 1.15rem;
+    color: #008dd2;
+}
+
+.formular-editor__section-title--level-2 {
+    font-size: 1rem;
+    color: #555;
+}
+
+.formular-editor__subsections {
+    margin-top: 16px;
+}
+
+.formular-editor__field {
+    margin-bottom: 16px;
+}
+
+.formular-editor__field--root {
+    padding-bottom: 14px;
+    border-bottom: 2px solid #008dd2;
+    margin-bottom: 24px;
+}
+
+.formular-editor__field--root .formular-editor__section-title--level-0 {
+    margin-bottom: 12px;
+}
+
+.formular-editor__label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.formular-editor__textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #333;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s;
+}
+
+.formular-editor__attachments {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.formular-editor__attachments-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.formular-editor__attachments-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.formular-editor__attachment-toggle {
+    border: 1px dashed #94a3b8;
+    background: #fff;
+    color: #1f2937;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.formular-editor__attachment-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.formular-editor__attachment-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 34px 10px 10px;
+    width: 160px;
+    position: relative;
+}
+
+.formular-editor__attachment-card img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.formular-editor__attachment-info {
+    font-size: 0.85rem;
+    color: #475569;
+    width: 100%;
+}
+
+.formular-editor__attachment-info strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1f2937;
+    text-align: center;
+}
+
+.formular-editor__attachment-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.formular-editor__attachment-form {
+    display: grid;
+    gap: 8px;
+}
+
+.formular-editor__textarea:focus {
+    outline: none;
+    border-color: #008dd2;
+    box-shadow: 0 0 0 3px rgba(0, 141, 210, 0.1);
+}
+
+.formular-editor__footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.formular-editor__button {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: inherit;
+}
+
+.formular-editor__button--cancel {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.formular-editor__button--cancel:hover:not(:disabled) {
+    background-color: #e8e8e8;
+    color: #333;
+}
+
+.formular-editor__button--save {
+    background-color: #008dd2;
+    color: white;
+}
+
+.formular-editor__button--save:hover:not(:disabled) {
+    background-color: #007ab8;
+}
+
+.formular-editor__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Скроллбар */
+.formular-editor__body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.formular-editor__body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.formular-editor__body::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-radius: 4px;
+}
+
+.formular-editor__body::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+.formular-editor__attachment-thumb {
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.formular-editor__image-preview {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 12000;
+    padding: 24px;
+}
+
+.formular-editor__image-preview-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formular-editor__image-preview-content img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.formular-editor__image-preview-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.formular-editor__image-preview-caption {
+    color: #e2e8f0;
+    font-size: 0.9rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .formular-editor__header {
+        padding: 16px 20px;
+    }
+    
+    .formular-editor__header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .formular-editor__body {
+        padding: 20px;
+    }
+    
+    .formular-editor__section--level-2 {
+        padding-left: 8px;
+    }
+}

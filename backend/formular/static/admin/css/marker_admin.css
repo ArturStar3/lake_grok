@@ -1,0 +1,27 @@
+:root {
+    --blue-first-color: #008DD2;
+    --blue-second-color: #FEFEFE;
+    --blue-third-color: #00A0E3;
+
+    --red-first-color: #970e0e;
+    --red-second-color: #FEFEFE;
+    --red-third-color: #c20b0b;
+
+    --green-first-color: #0e970e;
+    --green-second-color: #FEFEFE;
+    --green-third-color: #0bc214;
+}
+
+/* Blue */
+.stop-color__first-color {stop-color: var(--blue-first-color);}
+.stop-color__second-color {stop-color: var(--blue-second-color);}
+.stop-color__third-color {stop-color: var(--blue-third-color);}
+.fill__first-color {fill: var(--blue-first-color);}
+.fill__third-color {fill: var(--blue-third-color);}
+.stroke__first-color {stroke: var(--blue-first-color);}
+
+svg {
+    max-width: 60px;
+    max-height: 60px;
+}
+

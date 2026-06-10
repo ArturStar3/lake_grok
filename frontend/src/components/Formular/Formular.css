@@ -1,0 +1,357 @@
+.formular {
+    padding: 10px 20px 0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 176px);
+}
+
+.formular__wraper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* grid-template-rows: minmax(0, 5fr) minmax(0, 2fr); */
+    gap: 10px 20px;
+    flex: 1;
+    width: 80vw;
+}
+
+.formular__content,
+.formular__map,
+.formular__features {
+    width: 100%;
+    background-color: #FEFEFE;
+    border-radius: 30px;
+    box-shadow: 0 0 12px 2px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.formular__content--map-fullscreen {
+    display: none;
+}
+
+.formular__features-wraper {
+    position: sticky;
+    top: 10px;
+    max-height: 85vh;
+    display: grid;
+    grid-template-rows: minmax(0, 5fr) minmax(0, 2fr);
+    gap: 10px;
+}
+
+.formular__map {
+    height: 100%;
+}
+
+.formular__content {
+    /* grid-row: span 2; */
+    position: relative;
+    z-index: 0;
+    padding: 20px;
+    width: 100%;
+    min-height: 77vh;
+}
+
+.formular__features {
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    height: 1005;
+    overflow: auto;
+    min-height: 0;
+}
+
+.formular__heading-wraper {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 15px;
+    margin-bottom: 20px;
+}
+
+.formular__heading-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.formular__tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 15px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 12px;
+}
+
+.formular__tab {
+    border: 1px solid #d8e2f0;
+    background: #f8fafc;
+    color: #0b5073;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.formular__tab--active {
+    background: #008dd2;
+    color: #fff;
+    border-color: #008dd2;
+}
+
+.events__table {
+    width: 100%;
+    margin-top: 12px;
+}
+
+.events__table-row {
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.events__head-cell {
+    text-align: left;
+    padding: 8px 6px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.events__head-cell--select-all {
+    width: 40px;
+    text-align: left;
+}
+
+.events__head-cell--action {
+    width: 40px;
+}
+
+.events__table-data {
+    padding: 8px 6px;
+    border-top: 1px solid #eef2f7;
+}
+
+.events__table-data--action {
+    text-align: center;
+}
+
+.events__flyto-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #008dd2;
+    transition: color 0.2s, transform 0.2s;
+    border-radius: 4px;
+}
+
+.events__flyto-btn:hover {
+    color: #005b95;
+    background-color: #f0f8ff;
+    transform: scale(1.1);
+}
+
+.events__flyto-btn:active {
+    transform: scale(0.95);
+}
+
+.events__marker-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+}
+
+.events__action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #d32f2f;
+}
+
+/* .formular__data-wraper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+} */
+
+.formular__filter-area {
+    padding: 15px;
+}
+
+.formular__table {
+    width: 100%;
+}
+
+.formular__head-cell--select-all {
+    text-align: left;
+}
+
+.formular__table-row {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.formular__table-row--hovered {
+    background-color: #e8f4ff;
+}
+
+.formular__table-row--hovered .formular__table-data {
+    font-weight: 500;
+}
+
+.formular__table-data--clickable {
+    cursor: pointer;
+    position: relative;
+}
+.formular__tools {
+    position: relative;
+}
+
+.button__tools {
+    background-color: #eef7fd;
+    border: 1px solid #008dd2;
+    color: #0b5073;
+}
+
+.button__tools--active {
+    background-color: #008dd2;
+    color: #fff;
+}
+
+.formular__tools-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    z-index: 500;
+    padding: 6px;
+}
+
+.tools-menu__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #0b5073;
+}
+
+.tools-menu__item:hover {
+    background: #f5f9fd;
+}
+
+.tools-menu__item--active {
+    background: #e8f4ff;
+    color: #005b95;
+}
+
+.formular__table-data--clickable::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -5px;
+    height: 100%;
+    width: 1px;
+    border-left: 3px solid #000;
+    transform: scaleY(0);
+    transition: transform ease-in-out 0.15s;
+}
+
+.formular__table-data--clickable:hover::after {
+    transform: scaleY(1);
+}
+
+.formular__head-cell--action {
+    width: 40px;
+    text-align: center;
+}
+
+.formular__table-data--action {
+    text-align: center;
+    padding: 4px;
+}
+
+.formular__flyto-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #008dd2;
+    transition: color 0.2s, transform 0.2s;
+    border-radius: 4px;
+}
+
+.formular__flyto-btn:hover {
+    color: #005b95;
+    background-color: #f0f8ff;
+    transform: scale(1.1);
+}
+
+.formular__flyto-btn:active {
+    transform: scale(0.95);
+}
+
+.formular__flyto-btn svg {
+    display: block;
+}
+
+.formular__actions-group {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.formular__action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, transform 0.2s, background-color 0.2s;
+    border-radius: 4px;
+}
+
+.formular__action-btn--edit {
+    color: #008dd2;
+}
+
+.formular__action-btn--edit:hover {
+    color: #005b95;
+    background-color: #f0f8ff;
+    transform: scale(1.1);
+}
+
+.formular__action-btn--delete {
+    color: #d32f2f;
+}
+
+.formular__action-btn--delete:hover {
+    color: #b71c1c;
+    background-color: #ffebee;
+    transform: scale(1.1);
+}
+
+.formular__action-btn:active {
+    transform: scale(0.95);
+}
+
+.formular__action-btn svg {
+    display: block;
+}

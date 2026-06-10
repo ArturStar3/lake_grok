@@ -1,0 +1,23 @@
+.custom-input {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px 10px 10px;
+    position: relative;
+}
+
+.custom-input__field {
+    width: 100%;
+    border: none;
+    font-family: inherit;
+    outline: none;
+}
+
+.custom-input__label {
+    position: absolute;
+    left: 15px;
+    top: 0;
+    transform: translateY(-50%);
+    background-color: #FEFEFE;
+    padding: 0 5px;
+    color: var(--border-color);
+}

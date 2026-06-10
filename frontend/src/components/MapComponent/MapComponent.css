@@ -1,0 +1,858 @@
+.map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.map--fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 500;
+    border-radius: 0;
+    box-shadow: 0;
+    overflow: hidden;
+}
+
+.map__fullscreen-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #FFFFFF;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 501;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s;
+}
+
+.map__event-actions {
+    position: absolute;
+    top: 15px;
+    right: 70px;
+    display: flex;
+    gap: 8px;
+    z-index: 501;
+}
+
+.map__event-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.map__event-action:active {
+    transform: scale(0.96);
+}
+
+.map__event-action--confirm {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.map__event-action--confirm:hover {
+    background: #1b5e20;
+}
+
+.map__event-action--cancel {
+    background: #c62828;
+    color: #fff;
+}
+
+.map__event-action--cancel:hover {
+    background: #8e1e1e;
+}
+
+/* Unified sidebar for fullscreen mode */
+.map__sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 28%;
+    max-width: 400px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(8px);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 500;
+    overflow: hidden;
+}
+
+.map__sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.map__sidebar-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.map__sidebar-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.map__sidebar-close:hover {
+    color: #1a1a1a;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.map__sidebar-section {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.map__sidebar-subtitle {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tools section with buttons */
+.map__sidebar-section:first-of-type {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.map__event-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    padding: 8px;
+    min-width: 220px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    z-index: 600;
+}
+
+.map__event-menu-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 4px 6px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.map__event-menu-item {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #1f2937;
+    transition: background-color 0.2s;
+}
+
+.map__event-menu-item:hover {
+    background-color: rgba(0, 141, 210, 0.1);
+}
+
+.map__event-menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.map__cursor-coords {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    z-index: 510;
+}
+
+.event-point-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.leaflet-marker-icon.event-point-icon {
+    pointer-events: auto !important;
+    z-index: 1200 !important;
+}
+
+.leaflet-marker-icon.event-point-icon * {
+    pointer-events: auto !important;
+}
+
+.event-point-handle {
+    width: 12px;
+    height: 12px;
+    background: #ff9800;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+}
+
+.event-marker-icon {
+    background: transparent;
+    border: none;
+}
+
+.event-marker-icon__wrap {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-marker-icon__wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.event-marker-icon__svg svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.event-marker-icon__fallback {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2f80ed;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.event-radius-label {
+    background: transparent !important;
+    border: none !important;
+    pointer-events: none !important;
+    transform: translate(-50%, -50%);
+}
+
+.event-radius-label__inner {
+    background: transparent;
+    color: #1f2937;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.65;
+    white-space: nowrap;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.event-segment-label {
+    background: transparent !important;
+    border: none !important;
+    pointer-events: none !important;
+    transform: translate(-50%, -50%);
+}
+
+.event-segment-label__inner {
+    background: transparent;
+    color: #1f2937;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.6;
+    white-space: nowrap;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.event-popup {
+    pointer-events: auto;
+}
+
+.event-popup .leaflet-popup-content-wrapper,
+.event-popup .leaflet-popup-tip,
+.event-popup .leaflet-popup-close-button {
+    pointer-events: auto;
+}
+
+/* Objects section - scrollable */
+.map__objects-section {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    min-height: 0;
+}
+
+.map__objects-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.map__objects-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.map__objects-section::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.map__objects-section::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Features section at bottom */
+.map__features-section {
+    border-bottom: none;
+    max-height: 300px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    margin-bottom: 16px;
+}
+
+.map__features-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.map__features-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.map__features-section::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* Measurement mode button */
+.map__measure-btn {
+    background-color: #fff;
+    border: 2px solid #008dd2;
+    color: #008dd2;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.map__measure-btn:hover {
+    background-color: #e8f4fb;
+    border-color: #0076b3;
+    color: #0076b3;
+}
+
+.map__measure-btn--active {
+    background-color: #008dd2;
+    color: #fff;
+    border-color: #008dd2;
+}
+
+.map__measure-btn--active:hover {
+    background-color: #0076b3;
+    border-color: #0076b3;
+}
+
+/* Measurement menu wrapper */
+.map__measure-menu-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.map__measure-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.map__measure-menu-arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.map__measure-menu-arrow--open {
+    transform: rotate(180deg);
+}
+
+/* Measurement menu */
+.map__measure-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.map__measure-menu-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 13px;
+    color: #1a1a1a;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.map__measure-menu-item:last-child {
+    border-bottom: none;
+}
+
+.map__measure-menu-item:hover:not(:disabled) {
+    background-color: #f5f5f5;
+}
+
+.map__measure-menu-item:disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #fafafa;
+}
+
+.map__sidebar-toggle {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    z-index: 499;
+}
+
+.map__sidebar-toggle:hover {
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+.leaflet-bottom {
+    display: none;
+}
+
+:root {
+    --white-middle-color: #FEFEFE;
+    --green-middle-color: #5aad73;
+    --border-color: #2B2A29;
+    --text-color: #2B2A29;
+
+    --blue-first-color: #008DD2;
+    --blue-third-color: #00A0E3;
+    --blue-forth-color: #A2D9F7;
+
+    --red-first-color: #970e0e;
+    --red-third-color: #c20b0b;
+    --red-forth-color: #f7baa2;
+
+    --green-first-color: #0e970e;
+    --green-third-color: #0bc214;
+    --green-forth-color: #a2f7bc;
+
+    --yellow-first-color: #8e970e;
+    --yellow-third-color: #c2bf0b;
+    --yellow-forth-color: #f7f1a2;
+
+    --marine-first-color: #0077BE;
+    --marine-third-color: #35a5e6;
+    --marine-forth-color: #95d3f7;
+}
+
+/* Border */
+.stroke__border-color {stroke: var(--border-color);}
+.fill__text-color {fill: var(--text-color);}
+
+/* Blue */
+.icon__blue .stop-color__first-color {stop-color: var(--blue-first-color);}
+.icon__blue .stop-color__second-color {stop-color: var(--white-middle-color);}
+.icon__blue .stop-color__third-color {stop-color: var(--blue-third-color);}
+.icon__blue .stop-color__forth-color {stop-color: var(--blue-forth-color);}
+.icon__blue .fill__first-color {fill: var(--blue-first-color);}
+.icon__blue .fill__second-color {fill: var(--white-middle-color);}
+.icon__blue .fill__third-color {fill: var(--blue-third-color);}
+.icon__blue .stroke__first-color {stroke: var(--blue-first-color);}
+
+/* Red */
+.icon__red .stop-color__first-color {stop-color: var(--red-first-color);}
+.icon__red .stop-color__second-color {stop-color: var(--white-middle-color);}
+.icon__red .stop-color__third-color {stop-color: var(--red-third-color);}
+.icon__red .stop-color__forth-color {stop-color: var(--red-forth-color);}
+.icon__red .fill__first-color {fill: var(--red-first-color);}
+.icon__red .fill__second-color {fill: var(--white-middle-color);}
+.icon__red .fill__third-color {fill: var(--red-third-color);}
+.icon__red .stroke__first-color {stroke: var(--red-first-color);}
+
+/* Green */
+.icon__green .stop-color__first-color {stop-color: var(--green-first-color);}
+.icon__green .stop-color__second-color {stop-color: var(--white-middle-color);}
+.icon__green .stop-color__third-color {stop-color: var(--green-third-color);}
+.icon__green .stop-color__forth-color {stop-color: var(--green-forth-color);}
+.icon__green .fill__first-color {fill: var(--green-first-color);}
+.icon__green .fill__second-color {fill: var(--white-middle-color);}
+.icon__green .fill__third-color {fill: var(--green-third-color);}
+.icon__green .stroke__first-color {stroke: var(--green-first-color);}
+
+/* Yellow */
+.icon__yellow .stop-color__first-color {stop-color: var(--yellow-first-color);}
+.icon__yellow .stop-color__second-color {stop-color: var(--white-middle-color);}
+.icon__yellow .stop-color__third-color {stop-color: var(--yellow-third-color);}
+.icon__yellow .stop-color__forth-color {stop-color: var(--yellow-forth-color);}
+.icon__yellow .fill__first-color {fill: var(--yellow-first-color);}
+.icon__yellow .fill__second-color {fill: var(--white-middle-color);}
+.icon__yellow .fill__third-color {fill: var(--yellow-third-color);}
+.icon__yellow .stroke__first-color {stroke: var(--yellow-first-color);}
+
+/* Marine */
+.icon__marine .stop-color__first-color {stop-color: var(--marine-first-color);}
+.icon__marine .stop-color__second-color {stop-color: var(--green-middle-color);}
+.icon__marine .stop-color__third-color {stop-color: var(--marine-third-color);}
+.icon__marine .stop-color__forth-color {stop-color: var(--marine-forth-color);}
+.icon__marine .fill__first-color {fill: var(--marine-first-color);}
+.icon__marine .fill__second-color {fill: var(--green-middle-color);}
+.icon__marine .fill__third-color {fill: var(--marine-third-color);}
+.icon__marine .stroke__first-color {stroke: var(--marine-first-color);}
+
+/* Стили для флаговых маркеров */
+.custom-marker-label {
+    transition: transform 0.3s ease, filter 0.3s ease;
+    position: relative;
+    pointer-events: none; /* Отключаем события на всём контейнере */
+}
+
+.custom-marker-label:hover {
+    transform: translateY(var(--marker-offset-y, 0)) scale(1.15) !important;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    z-index: 1000 !important;
+}
+
+/* SVG маркер не интерактивен */
+.svg-marker {
+    pointer-events: none;
+}
+
+/* Только текстовая подпись интерактивна */
+.marker-label {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Родительский контейнер Leaflet для флаговых маркеров */
+.leaflet-marker-icon.custom-div-icon {
+    position: relative !important;
+    z-index: 200 !important; /* Выше, чем non-flag маркеры */
+    transition: z-index 0s;
+    pointer-events: none !important;
+}
+
+.leaflet-marker-icon.custom-div-icon:hover {
+    z-index: 1000 !important;
+}
+
+/* Дополнительные стили для marker-label определены выше в секции флаговых маркеров */
+.marker-label {
+    position: absolute;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    right: 5px;
+    width: 95%;
+    height: 50%;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+/* Стили для non-flag маркеров */
+.non-flag-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    position: relative;
+}
+
+.non-flag-marker:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    z-index: 1000 !important;
+}
+
+.non-flag-div-icon {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Родительский контейнер Leaflet для non-flag маркеров */
+.leaflet-marker-icon.non-flag-div-icon {
+    z-index: 100 !important; /* Ниже, чем флаговые маркеры */
+    transition: z-index 0s;
+    pointer-events: none !important; /* По умолчанию не блокируем события */
+}
+
+/* Разрешаем события только на самом маркере */
+.leaflet-marker-icon.non-flag-div-icon .non-flag-marker {
+    pointer-events: auto;
+}
+
+.leaflet-marker-icon.non-flag-div-icon:hover {
+    z-index: 1000 !important; /* При hover поднимаем наверх */
+    pointer-events: auto !important;
+}
+
+/* Стили для групповых маркеров */
+.group-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease, filter 0.3s ease;
+    position: relative;
+}
+
+.group-marker:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    z-index: 1000 !important;
+}
+
+.group-marker:hover svg circle:first-of-type {
+    opacity: 1 !important;
+    filter: brightness(1.2);
+}
+
+.group-div-icon {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Родительский контейнер Leaflet для групповых маркеров */
+.leaflet-marker-icon.group-div-icon {
+    position: relative !important;
+    z-index: 150 !important; /* Между non-flag и флаговыми маркерами */
+    transition: z-index 0s;
+}
+
+.leaflet-marker-icon.group-div-icon:hover {
+    z-index: 1000 !important;
+}
+
+/* Круг элементов группы при hover */
+.group-circle-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 107, 107, 0.5);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+    z-index: 400;
+}
+
+.group-circle-item {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.group-circle-item:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Стили для элементов в круге */
+.circle-item-marker {
+    animation: fadeIn 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease, filter 0.3s ease;
+    position: relative;
+}
+
+.circle-item-marker:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+    z-index: 1000 !important;
+}
+
+.circle-item-div-icon {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* Родительский контейнер Leaflet для элементов круга */
+.leaflet-marker-icon.circle-item-div-icon {
+    position: relative !important;
+    z-index: 300 !important; /* Выше всех остальных, так как это интерактивные элементы */
+    transition: z-index 0s;
+}
+
+.leaflet-marker-icon.circle-item-div-icon:hover {
+    z-index: 1000 !important;
+}
+
+.measure-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.measure-marker__circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #008dd2;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.measure-total-label {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000 !important;
+}
+
+.measure-total-label__text {
+    background: rgba(255, 107, 107, 0.9);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Анимация зон действия */
+
+/* Анимация "бегущего" пунктира на границе круга */
+@keyframes actionRadiusDash {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: 30;
+    }
+}
+
+/* Анимация пульсации для кругов зон действия через CSS */
+@keyframes actionRadiusPulse {
+    0% {
+        stroke-opacity: 0.8;
+        stroke-width: 3;
+    }
+    100% {
+        stroke-opacity: 0;
+        stroke-width: 1;
+    }
+}
+
+.action-radius-pulse-css-1 path {
+    animation: actionRadiusPulse 3s ease-out infinite;
+}
+
+.action-radius-pulse-css-2 path {
+    animation: actionRadiusPulse 3s ease-out infinite;
+    animation-delay: 1.5s;
+}
+
+/* Подсветка маркера при включённом режиме зоны действия */
+.action-radius-marker-highlight {
+    pointer-events: none;
+}

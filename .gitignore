@@ -1,0 +1,118 @@
+# ============================================
+# .gitignore для проекта infolake / lake_grok
+# Цель: в git попадают файлы из backend/ (кроме секретов) и frontend/
+# ============================================
+
+# ----------------------------------------
+# Переменные окружения (строго не в git)
+# ----------------------------------------
+.env
+.env.*
+*.env
+backend/.env
+backend/.env.*
+
+# ----------------------------------------
+# Python / Django
+# ----------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+
+# Виртуальные окружения
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+
+# ----------------------------------------
+# Media (загрузки пользователей и ассеты)
+# Полностью игнорируем media/, так как все загруженные файлы
+# (маркеры, вложения, иконки событий) теперь не попадают в git.
+# При необходимости можно закоммитить отдельные файлы через git add -f
+# ----------------------------------------
+media/
+
+# ----------------------------------------
+# Frontend (Vite + React)
+# ----------------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/coverage/
+
+# Логи и локальные файлы фронтенда
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ----------------------------------------
+# IDE и редакторы
+# ----------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ----------------------------------------
+# Операционная система
+# ----------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ----------------------------------------
+# Прочее (корневые файлы, не относящиеся к backend/frontend)
+# ----------------------------------------
+# Если не планируете коммитить эти папки/файлы:
+Данные.xlsx
+Значки/
+Значки событий/
+
+# ============================================
+# Что будет в git (по замыслу):
+# - backend/ (весь код, миграции .py, static, media/markers/, media/event_markers/)
+# - frontend/ (src/, public/, package.json, vite.config.js и т.д.)
+# - requirements.txt, manage.py и т.п.
+# ============================================

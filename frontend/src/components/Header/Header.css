@@ -1,0 +1,30 @@
+.header {
+    padding: 20px 40px;
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0 4px 12px rgba(71,80,9,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #FEFEFE;
+}
+
+.header__wraper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.header__user-img {
+    width: 40px;
+    height: 40px;
+    background-color: #FEFEFE;
+    border-radius: 50%;
+    border: 1px solid #808080;
+}
+
+.footer__title {
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 120%;
+    text-transform: uppercase;
+}

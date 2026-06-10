@@ -1,0 +1,14 @@
+
+/* Border */
+.stroke__border-color {stroke: #2B2A29;}
+.fill__text-color {fill: #2B2A29;}
+
+/* Blue */
+.stop-color__first-color {stop-color: #008DD2;}
+.stop-color__second-color {stop-color: #FEFEFE;}
+.stop-color__third-color {stop-color: #00A0E3;}
+.stop-color__forth-color {stop-color: #A2D9F7;}
+.fill__first-color {fill: #008DD2;}
+.fill__second-color {fill: #FEFEFE;}
+.fill__third-color {fill: #00A0E3;}
+.stroke__first-color {stroke: #008DD2;}
