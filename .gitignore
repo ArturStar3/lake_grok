@@ -110,6 +110,14 @@ desktop.ini
 Значки/
 Значки событий/
 
+# Large tile data (MBTiles) — НЕ попадают в git
+tiles/*.mbtiles
+tiles/main.mbtiles
+
+# TileServer GL конфигурация — ДОЛЖНА попадать в git
+!tileserver/
+!tileserver/**
+
 # ============================================
 # Что будет в git (по замыслу):
 # - backend/ (весь код, миграции .py, static, media/markers/, media/event_markers/)

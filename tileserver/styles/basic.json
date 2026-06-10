@@ -1,0 +1,47 @@
+{
+  "version": 8,
+  "name": "Basic",
+  "sources": {
+    "main": {
+      "type": "vector",
+      "url": "mbtiles://main.mbtiles"
+    }
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#f2efe9"
+      }
+    },
+    {
+      "id": "land",
+      "type": "fill",
+      "source": "main",
+      "source-layer": "landcover",
+      "paint": {
+        "fill-color": "#e0e0e0"
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "main",
+      "source-layer": "water",
+      "paint": {
+        "fill-color": "#aad3df"
+      }
+    },
+    {
+      "id": "roads",
+      "type": "line",
+      "source": "main",
+      "source-layer": "transportation",
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": 1
+      }
+    }
+  ]
+}

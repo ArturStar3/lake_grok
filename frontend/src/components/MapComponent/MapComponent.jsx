@@ -1163,6 +1163,8 @@ function MapComponent({
                 ref={mapRef}
                 center={center}
                 zoom={4}
+                minZoom={1}
+                maxZoom={14}
                 style={{height: "100%", width: "100%"}}
                 className={isFullscreen ? "map--fullscreen" : ""}
             >
@@ -1196,8 +1198,8 @@ function MapComponent({
                 />
                 <TileLayer
                     url="/tiles/{z}/{x}/{y}.png"
-                    minZoom={5}
-                    maxZoom={12}
+                    minZoom={1}
+                    maxZoom={14}
                 />
                 {geoData && (
                         <MemoGeoJSON

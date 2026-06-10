@@ -1,0 +1,30 @@
+{
+  "options": {
+    "paths": {
+      "root": "",
+      "fonts": "/fonts",
+      "styles": "/styles",
+      "mbtiles": "/data"
+    },
+    "serve": {
+      "pbf": true,
+      "png": true
+    }
+  },
+  "styles": {
+    "basic": {
+      "style": "basic.json",
+      "tilejson": {
+        "bounds": [-180, -85.0511, 180, 85.0511],
+        "minzoom": 1,
+        "maxzoom": 14,
+        "name": "Basic"
+      }
+    }
+  },
+  "data": {
+    "main": {
+      "mbtiles": "main.mbtiles"
+    }
+  }
+}

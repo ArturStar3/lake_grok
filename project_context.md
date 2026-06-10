@@ -40,10 +40,53 @@
   - `config/api.js` — единая `API_URL` (env или дефолт `http://172.16.80.207:8000`).
   - `components/Formular/Formular.jsx` — **главный оркестратор** (табы Objects/Events, фильтры, таблица, модалы, загрузка данных, состояние selected/hovered/measure/action-radius).
   - `components/MapComponent/` — карта Leaflet + кластеризация + события + инструменты (измерения, зоны действия, рисование событий).
+  - **Загрузка тайлов базовой карты** (обновлено для TileServer GL + MBTiles):
+    - Используется стандартный компонент `<TileLayer>` из `react-leaflet`.
+    - **Конфигурация** (в MapComponent.jsx):
+      ```jsx
+      <TileLayer
+          url="/tiles/{z}/{x}/{y}.png"
+          minZoom={1}
+          maxZoom={14}
+      />
+      ```
+    - URL остаётся `/tiles/{z}/{x}/{y}.png` (для совместимости).
+    - **Новая архитектура (offline)**:
+      - Тайлы теперь предоставляются **TileServer GL** из файла `main.mbtiles`.
+      - TileServer GL запускается через `docker-compose.yml` (сервис `tileserver` на порту 8080).
+      - Во время разработки (`npm run dev`) Vite проксирует `/tiles/*` → `http://localhost:8080/styles/basic/rendered/*` (см. `frontend/vite.config.js`).
+      - Для продакшн-сборки требуется либо reverse-proxy (nginx/traefik), либо изменение URL на полный (`http://localhost:8080/styles/basic/rendered/{z}/{x}/{y}.png`).
+    - Используемый стиль рендеринга: `basic` (минимальный стиль в `tileserver/styles/basic.json`).
+    - Данные: `tiles/main.mbtiles` (монтируется в контейнер).
+    - Зумы: 1–14 полностью поддерживаются:
+      - `MapContainer`: minZoom={1} maxZoom={14}
+      - `TileLayer`: minZoom={1} maxZoom={14}
+      - В `tileserver/config.json` tilejson: minzoom:1, maxzoom:14
+    - Поддержка зума от 1 до 14.
+    - `attribution` отсутствует (можно добавить позже).
+    - Полностью работает без интернета при наличии локального `main.mbtiles` и запущенного tileserver.
+
+**Как запустить (и устранение типичных ошибок):**
+1. Положи файл `main.mbtiles` в папку `tiles/main.mbtiles`.
+2. Убедись, что существуют директории:
+   - `tileserver/fonts/` (с .gitkeep)
+   - `tileserver/styles/` (с basic.json)
+3. `docker-compose down` (чтобы убить старый контейнер)
+4. `docker-compose up -d tileserver`
+5. В другом терминале: `cd frontend && npm run dev`
+6. Карта должна работать полностью локально.
+
+**Исправленные ошибки:**
+- "The specified path for "fonts" does not exist (/config/fonts)" → убрана относительная ссылка, добавлен явный mount `./tileserver/fonts:/fonts` и `"fonts": "/fonts"` в config.
+- Добавлен `TILESERVER_GL_ALLOWED_HOSTS=*` чтобы убрать security warning (для локальной разработки).
+- Пути в config сделаны абсолютными где нужно (`/styles`, `/data`, `/fonts`).
+
+Если mbtiles отсутствует — сервер запустится, но тайлы не будут отдаваться (проверь логи на "main.mbtiles").
   - Модалы: Add/Edit Target, Formular (view + editor bulk), Events (Add/Edit), Country info.
   - Таблицы: ObjectsTable, EventsTable, IntersectionTable.
   - Утилиты: clustering (markerClusteringUtils), circle intersections, SVG processing, marker filters.
 - `public/` — статика (sprite.svg, leaflet icons, geo/custom.geo.json для границ стран).
+- `tiles/` — данные для тайлов (main.mbtiles). Игнорируется в git (кроме .gitkeep). Монтируется в TileServer GL.
 - `index.html` (корень frontend).
 
 **Связи между слоями**
@@ -149,6 +192,7 @@
 - **Frontend:**
   - `Formular.jsx` — главный контейнер: fetch всех списков + events с фильтрами, мемоизация filteredObjects, обработчики CRUD (add/edit/delete target/event, bulk formular), состояние инструментов (measure, action radius, intersections, fullscreen, tabs).
   - `MapComponent.jsx` + `MapUtils.jsx` + `markerClusteringUtils.js` + `NonFlagMarkerUtils.jsx` — рендер карты, кластеризация (по country + order → вертикальные оффсеты в кластерах близких флагов), non-flag группировка в круги при hover, рисование событий (point/circle/polygon), GeoJSON стран, measure (Ctrl+click), action radius (анимации + intersections), event shapes (хранятся как JSON).
+  - **Загрузка тайлов**: детали не задокументированы в project_context.md (см. раздел Архитектура → MapComponent).
   - Модалы + Editor: AddTargetModal/EditTargetModal (с хуками useTargetFormData/useActionsArray/useDropdownWithSearch), FormularEditor (bulk по sections + attachments upload/delete), FormularModal (просмотр), CountryModal/EditCountryModal (info + attachments), AddEventModal.
   - `utils/`: circleIntersection.js (геометрия пересечений зон действия), svgUtils.js (enrichSvg с уникализацией id/gradients + цветовой класс, getViewBoxSize, addColorClassToSvg), markerFilters.js (isFlag/isNonFlag + фильтры по selected).
   - `hooks/`: useTargetFormData, useActionsArray, useDropdownWithSearch.
@@ -226,6 +270,7 @@
 - `circleIntersection.js` (исп. в Formular для intersections).
 - `data/objects.js`: устаревший статический массив (fallback, сейчас не основной).
 - Geo: `/geo/custom.geo.json` (границы стран, обработка onEachCountry + клик с alt/ctrl guards).
+- **Tile loading**: Информация о загрузке растровых тайлов базовой карты (TileLayer) в project_context.md отсутствует. Известно использование Leaflet/react-leaflet, но провайдер тайлов, URL и настройки не описаны.
 
 **Другие:**
 - Frontend clustering docs (CLUSTERING_*.md, INTEGRATION_GUIDE.md, IMPLEMENTATION_SUMMARY.md) — описывают алгоритм.
@@ -287,6 +332,18 @@
   - `Header/`, `Footer/`, `Sidebar.jsx` (legacy/не основной).
 - `public/` (фронт) — sprite.svg, leaflet/, geo/custom.geo.json, images.
 
+**tileserver/ (TileServer GL конфигурация — попадает в git)**
+- `tileserver/config.json` — основная конфигурация (пути, стили, данные).
+- `tileserver/styles/basic.json` — минимальный стиль рендеринга растровых тайлов.
+- `tileserver/fonts/` — директория для шрифтов (с .gitkeep; реальные шрифты можно добавить позже).
+- В корне tileserver/ и во всех подпапках есть файлы, которые попадут в git.
+- Не попадают в git: `tiles/*.mbtiles` (большие данные тайлов).
+- В .gitignore добавлены правила:
+  ```
+  !tileserver/
+  !tileserver/**
+  ```
+
 **Media (runtime)**
 - `backend/media/` — полностью игнорируется в .gitignore (не попадает в репозиторий). Содержит загруженные маркеры, иконки событий и пользовательские вложения.
 
@@ -294,11 +351,13 @@
 - `backend/markers/` (пример 1DM.svg).
 - `Значки/`, `Значки событий/` — исходные SVG иконок (вне кода, для импорта в media).
 - `Данные.xlsx` — возможно источник данных.
-- `.gitignore` — подготовлен так, чтобы в репозиторий попадали файлы из `backend/` (кроме `.env*`) и `frontend/`. Полностью игнорируется `media/` (маркеры, иконки событий и все вложения не попадают в git).
+- `tileserver/` — конфигурация TileServer GL (config.json, стили basic.json, fonts). Папка **должна попадать в git** (кроме данных mbtiles).
+- `.gitignore` — подготовлен так, чтобы в репозиторий попадали файлы из `backend/` (кроме `.env*`) и `frontend/`. Полностью игнорируется `media/` (маркеры, иконки событий и все вложения не попадают в git). Явно разрешена папка `tileserver/` (конфиги и стили версионируются). Игнорируются только `tiles/*.mbtiles`.
 
 ---
 
 **Примечания для следующего агента:**
+- **Важно:** Информация о том, как организована загрузка тайлов базовой карты (какой TileLayer используется, URL тайлов, attribution и т.д.), в project_context.md **отсутствует**. Если требуется анализ или изменение загрузки тайлов — сначала обнови этот файл, добавив соответствующий раздел.
 - Всё API открыто (AllowAny). Добавление auth потребует изменений в permissions + возможно JWT.
 - Кластеризация жёстко завязана на `marker.is_flag`, `order`, `scale`, `country.title` и пиксельные расчёты через map.latLngToLayerPoint.
 - Формуляр и CountryInfo — контент + attachments отдельно (bulk + файловые аплоады).
@@ -306,6 +365,9 @@
 - При изменениях моделей — миграции + обновление сериализаторов/модалов/хуков.
 - Frontend state в Formular.jsx (не Redux/Context глобально). Много useMemo/useEffect для фильтров, intersections, кластеров.
 - SVG обработка критична (уникализация id gradients при множестве одинаковых маркеров).
-- `.gitignore` создан с фокусом на backend (без .env) + frontend. Полностью игнорируется директория `media/` (все загруженные файлы, маркеры, вложения). При добавлении новых директорий/зависимостей обновляй `.gitignore` и этот раздел контекста.
+- `.gitignore` создан с фокусом на backend (без .env) + frontend. Полностью игнорируется директория `media/`. 
+  - `tileserver/` (конфигурация TileServer GL + стили) — **явно разрешена** в git с помощью `!tileserver/` и `!tileserver/**/*`.
+  - Игнорируются только `tiles/*.mbtiles` (данные).
+  При добавлении новых директорий обновляй `.gitignore` и этот раздел контекста.
 
 Файл создан как единый компактный справочник. Дубли кода и длинные фрагменты исключены.

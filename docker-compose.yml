@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  tileserver:
+    image: maptiler/tileserver-gl:latest
+    container_name: infolake-tileserver
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./tiles:/data
+      - ./tileserver/config.json:/config/config.json
+      - ./tileserver/styles:/styles
+      - ./tileserver/fonts:/fonts
+    environment:
+      - TILESERVER_GL_ALLOWED_HOSTS=*
+    command: >
+      --config /config/config.json
+      --port 8080
+      --verbose
+    restart: unless-stopped
+
+# To run:
+# 1. Place your main.mbtiles into ./tiles/main.mbtiles
+# 2. docker-compose up -d tileserver
+# 3. Access tiles at http://localhost:8080
+# 4. For frontend dev: npm run dev (vite will proxy /tiles requests)
