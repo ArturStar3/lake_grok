@@ -110,6 +110,39 @@ desktop.ini
 Значки/
 Значки событий/
 
+# ----------------------------------------
+# TileServer GL (tileserver/)
+# ----------------------------------------
+# Весь полезный контент tileserver/ публикуется в git:
+#   стили (borders-labels.json и др.), шрифты (глифы), скрипты, config.json,
+#   data/name-overrides.json, sprites/ и т.д.
+#
+# Единственное исключение — огромные файлы с тайлами (*.mbtiles).
+# Они никогда не должны попадать в git (файлы по 1-90+ ГБ).
+#
+# docker-compose.yml лежит только в корне проекта (не внутри tileserver/).
+# В tileserver/ больше нет отдельного .gitignore — все правила здесь.
+# ----------------------------------------
+
+# Полный запрет на .mbtiles (в tileserver/ и везде в проекте)
+**/*.mbtiles
+
+# Дополнительные большие/временные файлы из tileserver setup
+tileserver/test_data.zip
+tileserver/*.zip
+tileserver/terrain.mbtiles
+
+# Артефакты скачиваний и мусор (не должны появляться)
+tileserver/curl.exe
+tileserver/test_data.zip/
+tileserver/$null
+tileserver/-L
+tileserver/-o
+
+# Дублирующий docker-compose внутри tileserver/ (должен быть только в корне)
+tileserver/docker-compose.yml
+
+
 # ============================================
 # Что будет в git (по замыслу):
 # - backend/ (весь код, миграции .py, static, media/markers/, media/event_markers/)

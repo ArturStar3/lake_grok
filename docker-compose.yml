@@ -1,0 +1,54 @@
+services:
+  tileserver:
+    image: maptiler/tileserver-gl:latest
+    container_name: tileserver-gl
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./tileserver:/data
+    environment:
+      TILESERVER_GL_ALLOWED_HOSTS: "localhost,127.0.0.1"
+    command:
+      - "--config"
+      - "config.json"
+      - "--public_url"
+      - "http://localhost:8080/"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: infolake-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/media:/app/media
+    env_file:
+      - ./backend/.env
+    environment:
+      # PostgreSQL на хосте (не в Docker)
+      DB_HOST: host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: infolake-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      # URL для браузера на хосте (не внутренние имена контейнеров)
+      VITE_API_URL: http://localhost:8000
+      VITE_TILESERVER_URL: http://localhost:8080
+    depends_on:
+      - backend
+      - tileserver

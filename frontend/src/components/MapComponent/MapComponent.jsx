@@ -18,6 +18,7 @@ import CountryModal from "../CountryModal/CountryModal";
 import AddEventModal from "../Events/AddEventModal";
 import { isFlagMarker, isNonFlagMarker } from "../../utils/markerFilters";
 import { getGroupCirclePositions } from "./markerClusteringUtils";
+import { TILE_RASTER_URL } from "../../config/tiles";
 import "./MapComponent.css"
 
 // delete L.Icon.Default.prototype._getIconUrl;
@@ -1195,9 +1196,10 @@ function MapComponent({
                     onMarkerHover={handleMarkerHover}
                 />
                 <TileLayer
-                    url="/tiles/{z}/{x}/{y}.png"
+                    url={TILE_RASTER_URL}
                     minZoom={5}
-                    maxZoom={12}
+                    maxZoom={14}
+                    attribution='&copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>'
                 />
                 {geoData && (
                         <MemoGeoJSON
